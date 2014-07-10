@@ -810,6 +810,11 @@ $(document).ready(function() {
 	$('.ldap_submit').button();
 	$('.ldap_action_test_connection').button();
 	$('#ldap_action_delete_configuration').button();
+	setTimeout(function() {
+		// hack thanks to Chromium/Chrome, Safari
+		$('#ldap_agent_password').removeAttr('disabled');
+		$('#ldap_dn').removeAttr('disabled');
+	}, 200);
 	LdapWizard.initMultiSelect($('#ldap_userfilter_groups'),
 							   'ldap_userfilter_groups',
 							   t('user_ldap', 'Select groups'));
