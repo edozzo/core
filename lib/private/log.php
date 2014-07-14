@@ -154,6 +154,10 @@ class Log implements ILogger {
 		$message = strtr($message, $replace);
 
 		$logger = $this->logger;
-		$logger::write($app, $message, $level);
+		if (is_object($logger)) {
+			$logger->log($level, $message, $context);
+		} else {
+			call_user_func(array($this->logger, 'write'), $app, $message, $level);
+		}
 	}
 }
