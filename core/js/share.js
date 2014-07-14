@@ -436,7 +436,7 @@ OC.Share={
 						}
 					}
 					if (share.expiration != null) {
-						OC.Share.showExpirationDate(share.expiration);
+						OC.Share.showExpirationDate(share.expiration, share.stime);
 					}
 				});
 			}
@@ -716,7 +716,12 @@ OC.Share={
 	dirname:function(path) {
 		return path.replace(/\\/g,'/').replace(/\/[^\/]*$/, '');
 	},
-	showExpirationDate:function(date) {
+	showExpirationDate:function(date, shareTime) {
+		var now = new Date();
+		var datePickerOptions = {
+			minDate: now,
+			maxDate: null
+		};
 		$('#expirationCheckbox').attr('checked', true);
 		$('#expirationDate').val(date);
 		$('#expirationDate').show('blind');
@@ -726,13 +731,17 @@ OC.Share={
 		});
 		if (oc_appconfig.core.defaultExpireDateEnforced) {
 			$('#expirationCheckbox').attr('disabled', true);
-			$.datepicker.setDefaults({
-				maxDate : new Date(date.replace(' 00:00:00', ''))
-			});
+			// TODO: make sure the hours are set to zero
+			if (!shareTime) {
+				shareTime = now;
+			}
+			// max date is share date + X days
+			datePickerOptions.maxDate = new Date(1000 * (shareTime + oc_appconfig.core.defaultExpireDate * 24 * 3600));
 		}
 		if(oc_appconfig.core.defaultExpireDateEnabled) {
 			$('#defaultExpireMessage').show('blind');
 		}
+		$.datepicker.setDefaults(datePickerOptions);
 	}
 };
 

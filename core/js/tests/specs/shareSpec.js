@@ -354,6 +354,32 @@ describe('OC.Share tests', function() {
 					$('#dropdown [name=expirationCheckbox]').click();
 					expect($('#dropdown [name=expirationCheckbox]').prop('checked')).toEqual(true);
 				});
+				it('sets picker minDate to today and no maxDate by default', function() {
+					showDropDown();
+					expect($.datepicker._defaults.minDate).toEqual(new Date());
+					expect($.datepicker._defaults.maxDate).toEqual(null);
+				});
+				it('limits the date range to X days after share time when enforced', function() {
+					/* jshint camelcase:false */
+					oc_appconfig.core.defaultExpireDateEnabled = true;
+					oc_appconfig.core.defaultExpireDateEnforced = true;
+					showDropDown();
+					expect($.datepicker._defaults.minDate).toEqual(new Date());
+					expect($.datepicker._defaults.maxDate).toEqual(new Date(new Date().getTime() + 24 * 3600 * 7 * 1000));
+				});
+				it('limits the date range to X days after share time when enforced, even when redisplayed the next days', function() {
+					// item exists, was created two days ago
+					shareItem.expiration = '2014-1-27';
+					// share time has time component but must be stripped later
+					shareItem.stime = new Date(2014, 0, 20, 11, 0, 25).getTime() / 1000;
+					shareData.shares.push(shareItem);
+					/* jshint camelcase:false */
+					oc_appconfig.core.defaultExpireDateEnabled = true;
+					oc_appconfig.core.defaultExpireDateEnforced = true;
+					showDropDown();
+					expect($.datepicker._defaults.minDate).toEqual(new Date());
+					expect($.datepicker._defaults.maxDate).toEqual(new Date(new Date().getTime() + 24 * 3600 * 7 * 1000));
+				});
 			});
 		});
 		describe('"sharesChanged" event', function() {
